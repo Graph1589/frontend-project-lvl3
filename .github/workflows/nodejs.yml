@@ -28,6 +28,6 @@ jobs:
           npm run build
         env:
           CI: true
-    #  - name: Run linter
-    #    run: |
-    #      make lint
+      - name: Run linter
+        run: |
+          make lint
