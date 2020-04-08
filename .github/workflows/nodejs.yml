@@ -28,9 +28,9 @@ jobs:
           npm run build
         env:
           CI: true
-      - name: Run linter
-        run: |
-          make lint
+    #  - name: Run linter
+    #    run: |
+    #      make lint
       - name: Test & publish code coverage
         uses: paambaati/codeclimate-action@v2.4.0
         env:
