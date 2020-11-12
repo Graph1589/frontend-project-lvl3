@@ -29,13 +29,31 @@ const validate = (url) => {
     schema.validateSync(url);
     return '';
   } catch (e) {
+    console.log('NEVALIDNO!!!');
     return e.message;
   }
+};
+
+
+const parseXML = (feedString) => {
+  const parser = new DOMParser();
+  const feedDocument = parser.parseFromString(feedString, 'text/html');
+  const title = feedDocument.querySelector('title');
+  const description = feedDocument.querySelector('description');
+  const posts = [...feedDocument.querySelectorAll('item')].map((item) => [item.querySelector('title').value, item.querySelector('link').value]);
+
+  console.log(feedDocument.querySelectorAll('item'));
+  console.log(posts);
+  return {
+    // posts: [ feedDocument.querySelectorAll('')],
+  };
 };
 
 export default () => {
   const state = {
     form: {
+      state: 'filling',
+      valid: 'true',
       error: '',
     },
   };
@@ -44,34 +62,43 @@ export default () => {
   // const posts = [];
 
   const form = document.querySelector('[class="rss-form form-inline"]');
-  // const submitionButton = document.querySelector('[class="btn btn-primary"]');
+  const submitButton = document.querySelector('[class="btn btn-primary"]');
   const urlField = document.querySelector('[class="form-control"]');
-  const feedbackDanger = document.querySelector('[class="feedback text-danger"]');
+  const feedsColumn = document.querySelector('[class="col-md-10 col-lg-8 mx-auto feeds"]');
+  const alertDanger = document.querySelector('[class="feedback text-danger"]');
+  const alertSuccess = document.querySelector('[class="alert alert-success"]');
 
   const formState = onChange(state.form, (path, value) => {
     console.log('CHANGED');
     // console.log(path);
     console.log(value);
-    if (value !== '') {
-      urlField.classList.add('is-invalid');
-      console.log('invalid');
-    } else {
+    if (state.form.status === 'sended') {
       console.log('valid');
       urlField.classList.remove('is-invalid');
       console.log(`${urlField.value}`);
       proxy.get(`${urlField.value}`)
         .then((response) => {
-          console.log(response);
+          console.log(response.request.response);
+          parseXML(response.request.response);
+          //console.log(parseXML(response.request.response).querySelector('title'));
+          formState.status = 'during';
         })
         .catch((error) => {
           console.log(error);
         });
+    } else {
+      urlField.classList.add('is-invalid');
+      console.log('invalid');
     }
-    feedbackDanger.textContent = value;
+    submitButton.classList.remove('disabled');
+    alertDanger.textContent = formState.error;
   });
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    formState.error = validate(urlField.value);
+    submitButton.classList.add('disabled');
+
+    state.form.error = validate(urlField.value);
+    formState.status = 'sended';
   });
 };

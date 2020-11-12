@@ -11,6 +11,7 @@
       <div class="jumbotron">
         <h1 class="display-4">RSS Reader Header</h1>
         <p class="lead">Start reading RSS today!</p>
+        <p>https://ru.hexlet.io/lessons.rss</p>
         <form action class="rss-form form-inline" novalidate>
           <div class="form-group">
             <input type="text" required name="url" class="form-control"  placeholder="rss link">
@@ -18,13 +19,21 @@
             <button type="submit" class="btn btn-primary">Add</button>
         </form>
         <div class="feedback text-danger"></div>
+        <div class="feedback text-success"></div>
+        
       </div>
+
+      <div class="container-xl">
+
+        <div class="row">
+          <div class="col-md-10 col-lg-8 mx-auto feeds"></div>
+        </div>
 
 
       <div class="row">
-        <div class="col rss-items">items</div>
-        <div class="col rss-links">links</div>
+        <div class="col-md-10 col-lg-8 mx-auto posts"></div>
       </div>
+    </div>
 
       <div class="footer">
         <p>-----footer-----</p>

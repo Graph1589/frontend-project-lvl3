@@ -1,5 +1,5 @@
 // @ts-check
 
-import init from './init2';
+import init from './init3';
 
 init();
