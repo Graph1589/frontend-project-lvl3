@@ -1,22 +1,43 @@
 <!doctype html>
 <html>
   <head>
-    <title>Webpack Package</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>RSS</title>
   </head>
-  <body>
-    <div class="jumbotron jumbotron-fluid">
-      <div class="container">
-        <h1 class="display-4">Jumbotron header</h1>
-        <p class="lead">Jumbotron body</p>
+  <body class="d-flex flex-column h-100">
+    <div class="container mt-5">
+      <div class="jumbotron">
+        <h1 class="display-4">RSS Reader Header</h1>
+        <p class="lead">Start reading RSS today!</p>
+        <p>https://ru.hexlet.io/lessons.rss</p>
+        <form action class="rss-form form-inline" novalidate>
+          <div class="form-group">
+            <input type="text" required name="url" class="form-control"  placeholder="rss link">
+          </div>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+        <div class="feedback text-danger"></div>
+        <div class="feedback text-success"></div>
+        
+      </div>
+
+      <div class="container-xl">
+
+        <div class="row">
+          <div class="col-md-10 col-lg-8 mx-auto feeds"></div>
+        </div>
+
+
+      <div class="row">
+        <div class="col-md-10 col-lg-8 mx-auto posts"></div>
       </div>
     </div>
-    <form>
-      <div class="form-group">
-        <label for="exampleInpuText">Text</label>
-        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+
+      <div class="footer">
+        <p>-----footer-----</p>
       </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-    <div id="point"></div>
+    </div>
   </body>
 </html>
