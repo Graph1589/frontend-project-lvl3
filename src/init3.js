@@ -1,5 +1,12 @@
 
+// довести до ума отчистку перед рендером. Возможно рекурсия
+// разнести по модулям - вотчер, рендеры
 // нужна так же проверка на повторы; !!!!!!!!
+// сделать рендер ошибок и успехов через соответствующие функции
+// разобраться с CORS и загрузкой потоков с новостных сайтов
+// отрисовка фидов и постов
+// подключение i18next в шаблон и в вывод ошибок
+// организовать обновление rss потоков  и рендер после обновления
 
 import onChange from 'on-change';
 import axios from 'axios';
@@ -14,10 +21,11 @@ const proxy = axios.create({
 
 const validate = (url) => {
   try {
+    console.log('validating');
     schema.validateSync(url);
-    console.log('1');
     return {};
   } catch (e) {
+    console.log(`validation error : ${e.message}`);
     return e.message;
   }
 };
@@ -57,6 +65,91 @@ const updateValidationState = (watchedState) => {
   watchedState.form.errors = errors;
 };
 
+const renderLayout = (state) => {
+  console.log('rendering layout');
+  const layout = document.querySelector('[class="container-xl"]');
+  // здесь будет отчистка лэйаута
+  const { childNodes } = layout;
+  [...childNodes].forEach((childNode) => {
+    layout.removeChild(childNode);
+  });
+  // *******
+  // а здесь вывод стейта
+
+  // ФИДЫ------------------------------------------------
+  const feedsContainerCoat = document.createElement('div');
+  feedsContainerCoat.classList.add('row');
+  layout.appendChild(feedsContainerCoat);
+
+  const feedsContainerInward = document.createElement('div');
+  feedsContainerInward.classList.add('col-md-10');
+  feedsContainerInward.classList.add('col-lg-8');
+  feedsContainerInward.classList.add('mx-auto');
+  feedsContainerInward.classList.add('feeds');
+  feedsContainerCoat.appendChild(feedsContainerInward);
+
+  const feedsHeader = document.createElement('h2');
+  feedsHeader.textContent = 'Feeds';
+  feedsContainerInward.appendChild(feedsHeader);
+
+  const feedsList = document.createElement('ul');
+  feedsList.classList.add('list-group');
+  feedsList.classList.add('mb-5');
+  feedsContainerInward.appendChild(feedsList);
+  // добавление фидов
+  state.layout.feeds.forEach((currentFeed) => {
+    const currentFeedItem = document.createElement('li');
+    currentFeedItem.classList.add('list-group-item');
+
+    const currentFeedHeader = document.createElement('h3');
+    currentFeedHeader.textContent = currentFeed.streamTitle;
+    currentFeedItem.appendChild(currentFeedHeader);
+
+    const currentFeedDescription = document.createElement('p');
+    currentFeedDescription.textContent = currentFeed.streamDescription;
+    currentFeedItem.appendChild(currentFeedDescription);
+
+    feedsList.appendChild(currentFeedItem);
+  });
+  // ***
+
+  // ПОСТЫ------------------------------------------------
+  const postsContainerCoat = document.createElement('div');
+  postsContainerCoat.classList.add('row');
+  layout.appendChild(postsContainerCoat);
+
+  const postsContainerInward = document.createElement('div');
+  postsContainerInward.classList.add('col-md-10');
+  postsContainerInward.classList.add('col-mg-8');
+  postsContainerInward.classList.add('mx-auto');
+  postsContainerInward.classList.add('posts');
+  postsContainerCoat.appendChild(postsContainerInward);
+
+  const postsHeader = document.createElement('h2');
+  postsHeader.textContent = 'Posts';
+  postsContainerInward.appendChild(postsHeader);
+
+  const postsList = document.createElement('ul');
+  postsList.classList.add('list-group');
+  postsContainerInward.appendChild(postsList);
+  // добавление постов
+
+  state.layout.posts.forEach((currentPost) => {
+    console.log('current post adding');
+    const currentPostItem = document.createElement('li');
+    currentPostItem.classList.add('list-group-item');
+
+    const currentPostHref = document.createElement('a');
+    currentPostHref.setAttribute('href', currentPost.link);
+    currentPostHref.textContent = `${currentPost.title} / ${currentPost.description}`;
+    currentPostItem.appendChild(currentPostHref);
+
+    postsList.appendChild(currentPostItem);
+  });
+
+  // ***
+};
+
 const renderErrors = (feedbackDanger, value) => {
   // отражение ошибок на html файле
   feedbackDanger.textContent = !isEmpty(value) ? value : '';
@@ -76,23 +169,20 @@ export default () => {
       valid: true,
       errors: {},
     },
-    feeds: [],
-    posts: {},
+    layout: {
+      feeds: [],
+      posts: [],
+    },
   };
 
   // константы
   const form = document.querySelector('[class="rss-form form-inline"]');
   const urlField = document.querySelector('[class="form-control"]');
   const submitButton = document.querySelector('[class="btn btn-primary"]');
-
+  
   const feedbackDanger = document.querySelector('[class="feedback text-danger"]');
   const feedbackSuccess = document.querySelector('[class="feedback text-success"]');
   // возможно, здесь также понадобится данжер и succes alert
-
-  const addRSS = (parsedRSS) => {
-
-  };
-
 
   // стейт хендлер
   const procesStateHandler = (processState) => {
@@ -109,6 +199,7 @@ export default () => {
         submitButton.disabled = true;
         break;
       case 'finished':
+        // здесь сделать отрисовку через renderSuccess;
         feedbackSuccess.textContent = 'feed has been added';
         urlField.value = '';
         // здесь, вероятно, вся форма исчезнет при удачном добавлении фида
@@ -131,10 +222,24 @@ export default () => {
       case 'form.errors':
         feedbackDanger.textContent = !isEmpty(value) ? value : '';
         break;
+      case 'layout.posts':
+        console.log('watched state, state.posts changed');
+        renderLayout(state);
+        break;
       default:
         break;
     }
   });
+
+  const addRSS = ({
+    url, streamTitle, streamDescription, posts,
+  }) => {
+    console.log('adding rss'); // сюда проходит
+    console.log(state);
+    watchedState.layout.feeds = [{ url, streamTitle, streamDescription }, ...state.layout.feeds];
+    watchedState.layout.posts = [...posts, state.layout.posts];
+    console.log(state);
+  };
 
   // евент листнер на ввод
   urlField.addEventListener('input', (e) => {
@@ -157,7 +262,7 @@ export default () => {
         // console.log(response.request.response);
         const parsedRSS = parseXML(response.request.response, urlField.value);
         addRSS(parsedRSS);
-        console.log(parsedRSS);
+        // console.log(parsedRSS);
         watchedState.form.processState = 'finished';
         // здесь очевидно должен быть рендер;
         // console.log(parsedRSS);
