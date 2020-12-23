@@ -30,7 +30,7 @@ const validate = (url) => {
 
 const parseXML = (feedString, url) => {
   const parser = new DOMParser();
-  const feedDocument = parser.parseFromString(feedString, 'text/html');
+  const feedDocument = parser.parseFromString(feedString, 'text/xml');
   const streamTitle = feedDocument.querySelector('title').textContent;
   const streamDescription = feedDocument.querySelector('description').textContent;
   const posts = [...feedDocument.querySelectorAll('item')].map((item) => {
@@ -38,10 +38,10 @@ const parseXML = (feedString, url) => {
     const title = item.querySelector('title').textContent;
     const link = item.querySelector('link').nextSibling.textContent;
     const description = item.querySelector('description').textContent;
-    const pubdate = item.querySelector('pubdate').textContent;
+    // const pubdate = item.querySelector('pubdate').textContent;
     const own = url;
     return {
-      title, link, description, pubdate, own,
+      title, link, description, /*pubdate,*/ own,
     };
   });
   // заголовок и описание вытаскиваются нормально, но посты при итерации пустые
@@ -274,7 +274,7 @@ export default () => {
       .then((response) => {
         // console.log(response.request.response);
         const parsedRSS = parseXML(response.request.response, urlField.value);
-        console.log(response.data);
+        console.log(`response.data = ${response.data}`);
         addRSS(parsedRSS);
         // console.log(parsedRSS);
         watchedState.form.processState = 'finished';
