@@ -1,9 +1,9 @@
-
+// разобраться с CORS и загрузкой потоков с новостных сайтов
+// ***
 // довести до ума отчистку перед рендером. Возможно рекурсия
 // разнести по модулям - вотчер, рендеры
 // нужна так же проверка на повторы; !!!!!!!!
 // сделать рендер ошибок и успехов через соответствующие функции
-// разобраться с CORS и загрузкой потоков с новостных сайтов
 // отрисовка фидов и постов
 // подключение i18next в шаблон и в вывод ошибок
 // организовать обновление rss потоков  и рендер после обновления
@@ -11,13 +11,11 @@
 import onChange from 'on-change';
 import axios from 'axios';
 import * as yup from 'yup';
-import _, { isEmpty } from 'lodash';
+import _, { isEmpty, remove } from 'lodash';
 
 const schema = yup.string().url();
 
-const proxy = axios.create({
-  baseURL: 'https://cors-anywhere.herokuapp.com/',
-});
+const proxy = 'https://cors-anywhere.herokuapp.com/';
 
 const validate = (url) => {
   try {
@@ -69,10 +67,25 @@ const renderLayout = (state) => {
   console.log('rendering layout');
   const layout = document.querySelector('[class="container-xl"]');
   // здесь будет отчистка лэйаута
+
+  const layoutCleaner = (node) => {
+    if (node.hasChildNodes()) {
+      node.childNodes.forEach((child) => {
+        layoutCleaner(child);
+      });
+    }
+    console.log('childNode deleting');
+    node.remove();
+  };
+  layout.childNodes.forEach((childNode) => {
+    layoutCleaner(childNode);
+  });
+
   const { childNodes } = layout;
   [...childNodes].forEach((childNode) => {
-    layout.removeChild(childNode);
+    layoutCleaner(childNode);
   });
+
   // *******
   // а здесь вывод стейта
 
@@ -120,7 +133,7 @@ const renderLayout = (state) => {
 
   const postsContainerInward = document.createElement('div');
   postsContainerInward.classList.add('col-md-10');
-  postsContainerInward.classList.add('col-mg-8');
+  postsContainerInward.classList.add('col-lg-8');
   postsContainerInward.classList.add('mx-auto');
   postsContainerInward.classList.add('posts');
   postsContainerCoat.appendChild(postsContainerInward);
@@ -237,7 +250,7 @@ export default () => {
     console.log('adding rss'); // сюда проходит
     console.log(state);
     watchedState.layout.feeds = [{ url, streamTitle, streamDescription }, ...state.layout.feeds];
-    watchedState.layout.posts = [...posts, state.layout.posts];
+    watchedState.layout.posts = posts.concat(state.layout.posts);
     console.log(state);
   };
 
@@ -257,10 +270,11 @@ export default () => {
     console.log('sending');
     watchedState.form.processState = 'sending';
     // тут промис с запросом на прокси / или нет?
-    proxy.get(`${urlField.value}`)
+    axios.get(`${proxy}${urlField.value}`)
       .then((response) => {
         // console.log(response.request.response);
         const parsedRSS = parseXML(response.request.response, urlField.value);
+        console.log(response.data);
         addRSS(parsedRSS);
         // console.log(parsedRSS);
         watchedState.form.processState = 'finished';
