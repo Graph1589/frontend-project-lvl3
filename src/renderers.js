@@ -90,22 +90,25 @@ const renderLayout = (state) => {
 
     postsList.appendChild(currentPostItem);
   });
-
-  // ***
 };
 
 const feedbackDanger = document.querySelector('[class="feedback text-danger"]');
+const successMessage = document.querySelector('[class="feedback text-success"]');
 
 const renderInputError = (errorName) => {
-  // отражение ошибок на html файле
-  // сделать поиск дэнжера без передачи аргументом
   console.log(`render error function get value - ${errorName}`);
   feedbackDanger.textContent = !(errorName === '') ? i18next.t(`errors.input.${errorName}`) : '';
-  // продумать аргументы функции с учетом того, что у меня 1 поле ввода
 };
 
 const renderFeedError = (errorName) => {
   feedbackDanger.textContent = !(errorName === '') ? i18next.t(`errors.feed.${errorName}`) : '';
 };
 
-export { renderLayout, renderInputError, renderFeedError };
+const renderSuccessMessage = (messageName) => {
+  console.log('SUCCESS MESSAGE RENDERER');
+  successMessage.textContent = !(messageName === '') ? i18next.t(`messages.${messageName}`) : '';
+};
+
+export {
+  renderLayout, renderInputError, renderFeedError, renderSuccessMessage,
+};

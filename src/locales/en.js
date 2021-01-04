@@ -11,5 +11,8 @@ export default {
         network: 'Network problems. Please try again.',
       },
     },
+    messages: {
+      added: 'Feed added successfully.',
+    },
   },
 };

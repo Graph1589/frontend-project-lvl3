@@ -10,13 +10,13 @@ import i18next from 'i18next';
 import axios from 'axios';
 // import _, { isEmpty } from 'lodash';
 import resources from './locales';
-import { renderLayout, renderInputError, renderFeedError } from './renderers';
+import {
+  renderLayout, renderInputError, renderFeedError, renderSuccessMessage
+} from './renderers';
 import validate from './validator';
 import parseXML from './parser';
 // import view form './view';
 
-
-const proxy = 'https://cors-anywhere.herokuapp.com/';
 
 export default () => {
   const state = {
@@ -47,12 +47,14 @@ export default () => {
         break;
       case 'filling':
         submitButton.disabled = false;
+        renderSuccessMessage('');
         break;
       case 'sending':
         submitButton.disabled = true;
         break;
       case 'finished':
         urlField.value = '';
+        renderSuccessMessage('added');
         break;
       default:
         throw new Error(`Unknown state: ${processState}`);
@@ -108,6 +110,8 @@ export default () => {
     watchedState.form.injectedUrl = e.target.value;
     updateValidationState(watchedState);
   });
+
+  const proxy = 'https://cors-anywhere.herokuapp.com/';
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
