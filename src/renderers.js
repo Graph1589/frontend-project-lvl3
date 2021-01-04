@@ -33,10 +33,7 @@ const renderLayout = (state) => {
   layout.appendChild(feedsContainerCoat);
 
   const feedsContainerInward = document.createElement('div');
-  feedsContainerInward.classList.add('col-md-10');
-  feedsContainerInward.classList.add('col-lg-8');
-  feedsContainerInward.classList.add('mx-auto');
-  feedsContainerInward.classList.add('feeds');
+  feedsContainerInward.classList.add('col-md-10', 'col-lg-8', 'mx-auto', 'feeds');
   feedsContainerCoat.appendChild(feedsContainerInward);
 
   const feedsHeader = document.createElement('h2');
@@ -44,8 +41,7 @@ const renderLayout = (state) => {
   feedsContainerInward.appendChild(feedsHeader);
 
   const feedsList = document.createElement('ul');
-  feedsList.classList.add('list-group');
-  feedsList.classList.add('mb-5');
+  feedsList.classList.add('list-group', 'mb-5');
   feedsContainerInward.appendChild(feedsList);
   // добавление фидов
   state.layout.feeds.forEach((currentFeed) => {
@@ -70,10 +66,7 @@ const renderLayout = (state) => {
   layout.appendChild(postsContainerCoat);
 
   const postsContainerInward = document.createElement('div');
-  postsContainerInward.classList.add('col-md-10');
-  postsContainerInward.classList.add('col-lg-8');
-  postsContainerInward.classList.add('mx-auto');
-  postsContainerInward.classList.add('posts');
+  postsContainerInward.classList.add('col-md-10', 'col-lg-8', 'mx-auto', 'posts');
   postsContainerCoat.appendChild(postsContainerInward);
 
   const postsHeader = document.createElement('h2');
@@ -101,13 +94,18 @@ const renderLayout = (state) => {
   // ***
 };
 
-const renderErrors = (errorName) => {
+const feedbackDanger = document.querySelector('[class="feedback text-danger"]');
+
+const renderInputError = (errorName) => {
   // отражение ошибок на html файле
   // сделать поиск дэнжера без передачи аргументом
   console.log(`render error function get value - ${errorName}`);
-  const feedbackDanger = document.querySelector('[class="feedback text-danger"]');
   feedbackDanger.textContent = !(errorName === '') ? i18next.t(`errors.input.${errorName}`) : '';
   // продумать аргументы функции с учетом того, что у меня 1 поле ввода
 };
 
-export { renderLayout, renderErrors };
+const renderFeedError = (errorName) => {
+  feedbackDanger.textContent = !(errorName === '') ? i18next.t(`errors.feed.${errorName}`) : '';
+};
+
+export { renderLayout, renderInputError, renderFeedError };

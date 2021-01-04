@@ -1,4 +1,4 @@
-
+// еще две ошибки?
 // ***
 // разнести по модулям - вотчер
 // сделать рендер ошибок и успехов через соответствующие функции
@@ -8,9 +8,9 @@
 import onChange from 'on-change';
 import i18next from 'i18next';
 import axios from 'axios';
-import _, { isEmpty } from 'lodash';
+// import _, { isEmpty } from 'lodash';
 import resources from './locales';
-import { renderLayout, renderErrors} from './renderers';
+import { renderLayout, renderInputError, renderFeedError } from './renderers';
 import validate from './validator';
 import parseXML from './parser';
 // import view form './view';
@@ -80,7 +80,7 @@ export default () => {
         submitButton.disabled = !value;
         break;
       case 'form.error':
-        renderErrors(watchedState.form.error);
+        renderInputError(watchedState.form.error);
         break;
       case 'layout.posts':
         console.log('watched state, state.posts changed');
@@ -139,8 +139,8 @@ export default () => {
         // console.log(parsedRSS);
         // console.log(parseXML(response.request.response).querySelector('title'));
       })
-      .catch((error) => {
-        console.log(error);
+      .catch(() => {
+        renderFeedError('network');
       });
   });
 
