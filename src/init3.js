@@ -25,7 +25,8 @@ export default () => {
       processState: 'filling',
       injectedUrl: '',
       valid: true,
-      error: '',
+      inputError: '',
+      feedError: '',
     },
     layout: {
       feeds: [],
@@ -79,8 +80,12 @@ export default () => {
       case 'form.valid':
         submitButton.disabled = !value;
         break;
-      case 'form.error':
-        renderInputError(watchedState.form.error);
+      case 'form.inputError':
+        renderInputError(value);
+        break;
+      case 'form.feedError':
+        console.log('feed error already in watcher');
+        renderFeedError(value);
         break;
       case 'layout.posts':
         console.log('watched state, state.posts changed');
@@ -98,7 +103,7 @@ export default () => {
     const error = validate(watchedState.form.injectedUrl, getFeedsList());
     watchedState.form.valid = (error === '');
     console.log(`updatevalidationstate-ERROR-${error}`);
-    watchedState.form.error = error;
+    watchedState.form.inputError = error;
   };
 
   const addRSS = ({
@@ -140,7 +145,10 @@ export default () => {
         // console.log(parseXML(response.request.response).querySelector('title'));
       })
       .catch(() => {
-        renderFeedError('network');
+        console.log('catch in GET');
+        console.log(`BEFORE watchedState.form.feedError = ${watchedState.form.feedError}`);
+        watchedState.form.feedError = 'network';
+        console.log(`AFTER watchedState.form.feedError = ${watchedState.form.feedError}`);
       });
   });
 
