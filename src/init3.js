@@ -8,10 +8,10 @@
 import onChange from 'on-change';
 import i18next from 'i18next';
 import axios from 'axios';
-// import _, { isEmpty } from 'lodash';
+import _, { isEmpty } from 'lodash';
 import resources from './locales';
 import {
-  renderLayout, renderInputError, renderFeedError, renderSuccessMessage
+  renderLayout, renderInputError, renderFeedError, renderSuccessMessage,
 } from './renderers';
 import validate from './validator';
 import parseXML from './parser';
@@ -32,6 +32,9 @@ export default () => {
       posts: [],
     },
   };
+
+  // const proxy = 'https://cors-anywhere.herokuapp.com/';
+  const proxy = 'https://hexlet-allorigins.herokuapp.com/raw?url=';
 
   const form = document.querySelector('[class="rss-form form-inline"]');
   const urlField = document.querySelector('[class="form-control"]');
@@ -100,6 +103,7 @@ export default () => {
   const addRSS = ({
     url, streamTitle, streamDescription, posts,
   }) => {
+    console.log(`${url}`);
     watchedState.layout.feeds = [{ url, streamTitle, streamDescription }, ...state.layout.feeds];
     watchedState.layout.posts = posts.concat(state.layout.posts);
   };
@@ -111,18 +115,27 @@ export default () => {
     updateValidationState(watchedState);
   });
 
-  const proxy = 'https://cors-anywhere.herokuapp.com/';
+  const updateRSS = ({
+    url, streamTitle, streamDescription, posts,
+  }) => {
+    console.log(`${url} updated`);
+  };
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    console.log('sending');
-    watchedState.form.processState = 'sending';
-    axios.get(`${proxy}${urlField.value}`)
+  const getRSS = (url) => {
+    axios.get(`${proxy}${url}`)
       .then((response) => {
-        const parsedRSS = parseXML(response.request.response, urlField.value);
-        console.log(`response.data = ${response.data}`);
-        addRSS(parsedRSS);
+        const parsedRSS = parseXML(response.data, url);
+        // console.log(`response.data = ${response.data}`);
+        // console.log(`parsed RSS - ${parsedRSS.url}`);
+        // здесь проверка на наличие и шорт свитч на добавление либо апдейт;
+        if (_.find(state.layout.feeds, ['url', url])) {
+          updateRSS(parsedRSS);
+        } else {
+          addRSS(parsedRSS);
+        }
+        // ***
         watchedState.form.processState = 'finished';
+        setTimeout(() => getRSS(url), 5000);
       })
       .catch(() => {
         console.log('catch in GET');
@@ -130,6 +143,13 @@ export default () => {
         watchedState.form.feedError = 'network';
         console.log(`AFTER watchedState.form.feedError = ${watchedState.form.feedError}`);
       });
+  };
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    console.log('sending');
+    watchedState.form.processState = 'sending';
+    getRSS(urlField.value);
   });
 
   i18next.init({

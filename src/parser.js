@@ -4,7 +4,7 @@ const parseXML = (feedString, url) => {
   const streamTitle = feedDocument.querySelector('title').textContent;
   const streamDescription = feedDocument.querySelector('description').textContent;
   const posts = [...feedDocument.querySelectorAll('item')].map((item) => {
-    console.log(item);
+    // console.log(item);
     const title = item.querySelector('title').textContent;
     const link = item.querySelector('link').nextSibling.textContent;
     const description = item.querySelector('description').textContent;
