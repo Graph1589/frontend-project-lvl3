@@ -1,14 +1,13 @@
-// еще две ошибки?
+// bug#1 input clear up when any feed update
+// генерировать id для фидов и постов
+// не появляются новые посты
+// возможно убрать полную отчистку layout
 // ***
-// разнести по модулям - вотчер
-// сделать рендер ошибок и успехов через соответствующие функции
-// подключение i18next в шаблон и в вывод ошибок
-// организовать обновление rss потоков  и рендер после обновления
 
 import onChange from 'on-change';
 import i18next from 'i18next';
 import axios from 'axios';
-import _, { isEmpty } from 'lodash';
+import _, { differenceBy, find, isEmpty } from 'lodash';
 import resources from './locales';
 import {
   renderLayout, renderInputError, renderFeedError, renderSuccessMessage,
@@ -34,7 +33,7 @@ export default () => {
   };
 
   // const proxy = 'https://cors-anywhere.herokuapp.com/';
-  const proxy = 'https://hexlet-allorigins.herokuapp.com/raw?url=';
+  const proxy = 'https://hexlet-allorigins.herokuapp.com/raw?disableCache=true&url=';
 
   const form = document.querySelector('[class="rss-form form-inline"]');
   const urlField = document.querySelector('[class="form-control"]');
@@ -104,8 +103,14 @@ export default () => {
     url, streamTitle, streamDescription, posts,
   }) => {
     console.log(`${url}`);
-    watchedState.layout.feeds = [{ url, streamTitle, streamDescription }, ...state.layout.feeds];
-    watchedState.layout.posts = posts.concat(state.layout.posts);
+    if (_.find(watchedState.layout.feeds, ['url', url])) {
+      const newPosts = differenceBy(watchedState.layout.posts, posts, 'title');
+      console.log(newPosts);
+      console.log(state);
+    } else {
+      watchedState.layout.feeds = [{ url, streamTitle, streamDescription }, ...state.layout.feeds];
+      watchedState.layout.posts = posts.concat(state.layout.posts);
+    }
   };
 
   urlField.addEventListener('input', (e) => {
@@ -115,27 +120,12 @@ export default () => {
     updateValidationState(watchedState);
   });
 
-  const updateRSS = ({
-    url, streamTitle, streamDescription, posts,
-  }) => {
-    console.log(`${url} updated`);
-  };
-
   const getRSS = (url) => {
     axios.get(`${proxy}${url}`)
       .then((response) => {
         const parsedRSS = parseXML(response.data, url);
-        // console.log(`response.data = ${response.data}`);
-        // console.log(`parsed RSS - ${parsedRSS.url}`);
-        // здесь проверка на наличие и шорт свитч на добавление либо апдейт;
-        if (_.find(state.layout.feeds, ['url', url])) {
-          updateRSS(parsedRSS);
-        } else {
-          addRSS(parsedRSS);
-        }
-        // ***
+        addRSS(parsedRSS);
         watchedState.form.processState = 'finished';
-        setTimeout(() => getRSS(url), 5000);
       })
       .catch(() => {
         console.log('catch in GET');
@@ -144,6 +134,31 @@ export default () => {
         console.log(`AFTER watchedState.form.feedError = ${watchedState.form.feedError}`);
       });
   };
+  const updateRSS = () => {
+    watchedState.layout.feeds.forEach((feed) => {
+      const { url } = feed;
+      console.log(feed.url);
+      axios.get(`${proxy}${url}`)
+        .then((response) => {
+          parseXML(response.data, url);
+        })
+        .then((parsedRSS) => {})
+      //  .then(({
+      //    url, streamTitle, streamDescription, posts,
+      //  }) => {
+      //    console.log(streamTitle);
+      //  })
+        .catch((e) => {
+          console.log(e);
+        });
+    });
+    // if (newPosts.lenght !== 0) {
+    //   newPosts.items.unshift(state.layout.posts);
+    // }
+    setTimeout(updateRSS, 5000);
+  };
+
+  setTimeout(updateRSS, 5000);
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
