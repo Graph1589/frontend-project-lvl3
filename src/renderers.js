@@ -79,7 +79,8 @@ const renderLayout = (state) => {
   // добавление постов
 
   state.layout.posts.forEach((currentPost) => {
-    console.log('current post adding');
+      console.log('current post adding');
+      console.log(currentPost.link);
     const currentPostItem = document.createElement('li');
     currentPostItem.classList.add('list-group-item');
 

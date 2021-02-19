@@ -1,6 +1,5 @@
-// bug#1 input clear up when any feed update
+
 // генерировать id для фидов и постов
-// не появляются новые посты
 // возможно убрать полную отчистку layout
 // ***
 
@@ -140,9 +139,10 @@ export default () => {
       console.log(feed.url);
       axios.get(`${proxy}${url}`)
         .then((response) => {
-          parseXML(response.data, url);
+          const parsedRSS = parseXML(response.data, url);
+          const newPosts = _.differenceBy(parsedRSS.posts, watchedState.layout.posts, 'title');
+          watchedState.layout.posts = newPosts.concat(watchedState.layout.posts);
         })
-        .then((parsedRSS) => {})
       //  .then(({
       //    url, streamTitle, streamDescription, posts,
       //  }) => {
