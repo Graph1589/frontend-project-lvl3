@@ -1,12 +1,12 @@
 
-// генерировать id для фидов и постов
-// возможно убрать полную отчистку layout
+// вынести view слой
+// открытие постов в новой вкладке
 // ***
 
 import onChange from 'on-change';
 import i18next from 'i18next';
 import axios from 'axios';
-import _, { differenceBy, find, isEmpty } from 'lodash';
+import _ from 'lodash';
 import resources from './locales';
 import {
   renderLayout, renderInputError, renderFeedError, renderSuccessMessage,
@@ -94,22 +94,7 @@ export default () => {
   const updateValidationState = () => {
     const error = validate(watchedState.form.injectedUrl, getFeedsList());
     watchedState.form.valid = (error === '');
-    console.log(`updatevalidationstate-ERROR-${error}`);
     watchedState.form.inputError = error;
-  };
-
-  const addRSS = ({
-    url, streamTitle, streamDescription, posts,
-  }) => {
-    console.log(`${url}`);
-    if (_.find(watchedState.layout.feeds, ['url', url])) {
-      const newPosts = differenceBy(watchedState.layout.posts, posts, 'title');
-      console.log(newPosts);
-      console.log(state);
-    } else {
-      watchedState.layout.feeds = [{ url, streamTitle, streamDescription }, ...state.layout.feeds];
-      watchedState.layout.posts = posts.concat(state.layout.posts);
-    }
   };
 
   urlField.addEventListener('input', (e) => {
@@ -119,12 +104,31 @@ export default () => {
     updateValidationState(watchedState);
   });
 
+  const addNewPosts = (newPosts, id) => {
+    const processedNewPosts = newPosts.map((post) => ({ ...post, id }));
+    watchedState.layout.posts = processedNewPosts.concat(state.layout.posts);
+  };
+
+  const addRSS = ({
+    streamTitle, streamDescription, posts, feedLink,
+  }) => {
+    const id = _.uniqueId();
+    watchedState.layout.feeds = [{
+      streamTitle, streamDescription, feedLink, id,
+    }, ...state.layout.feeds];
+    const processedPosts = posts.map((post) => ({ ...post, id }));
+    console.log(processedPosts);
+    watchedState.layout.posts = posts.concat(state.layout.posts);
+  };
+
   const getRSS = (url) => {
     axios.get(`${proxy}${url}`)
       .then((response) => {
         const parsedRSS = parseXML(response.data, url);
         addRSS(parsedRSS);
         watchedState.form.processState = 'finished';
+        console.log(`state in getRSS function: ${watchedState}`);
+        // setTimeout(() => updateRSS(), 5000);
       })
       .catch(() => {
         console.log('catch in GET');
@@ -133,36 +137,31 @@ export default () => {
         console.log(`AFTER watchedState.form.feedError = ${watchedState.form.feedError}`);
       });
   };
+
   const updateRSS = () => {
+    console.log('all feeds:');
     watchedState.layout.feeds.forEach((feed) => {
-      const { url } = feed;
-      console.log(feed.url);
-      axios.get(`${proxy}${url}`)
+      console.log(feed.feedLink);
+      axios.get(`${proxy}${feed.feedLink}`)
         .then((response) => {
-          const parsedRSS = parseXML(response.data, url);
-          const newPosts = _.differenceBy(parsedRSS.posts, watchedState.layout.posts, 'title');
-          watchedState.layout.posts = newPosts.concat(watchedState.layout.posts);
+          const { posts } = parseXML(response.data, feed.feedLink);
+          const newPosts = _.differenceBy(posts, watchedState.layout.posts, 'postTitle');
+          console.log(`state in get in updateRSS function: ${state.layout.feeds}`);
+          addNewPosts(newPosts, feed.id);
         })
-      //  .then(({
-      //    url, streamTitle, streamDescription, posts,
-      //  }) => {
-      //    console.log(streamTitle);
-      //  })
         .catch((e) => {
-          console.log(e);
+          console.log(`error in get in updateRSS function: ${e}`);
         });
     });
-    // if (newPosts.lenght !== 0) {
-    //   newPosts.items.unshift(state.layout.posts);
-    // }
-    setTimeout(updateRSS, 5000);
+    console.log('***');
+
+    setTimeout(() => updateRSS(), 5000);
   };
 
-  setTimeout(updateRSS, 5000);
+  setTimeout(updateRSS(), 5000);
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    console.log('sending');
     watchedState.form.processState = 'sending';
     getRSS(urlField.value);
   });

@@ -1,8 +1,6 @@
 import i18next from 'i18next';
-import isEmpty from 'lodash';
 
 const renderLayout = (state) => {
-  console.log('rendering layout');
   const layout = document.querySelector('[class="container-xl"]');
   // здесь будет отчистка лэйаута
 
@@ -12,7 +10,6 @@ const renderLayout = (state) => {
         layoutCleaner(child);
       });
     }
-    console.log('childNode deleting');
     node.remove();
   };
   layout.childNodes.forEach((childNode) => {
@@ -79,15 +76,18 @@ const renderLayout = (state) => {
   // добавление постов
 
   state.layout.posts.forEach((currentPost) => {
-      console.log('current post adding');
-      console.log(currentPost.link);
     const currentPostItem = document.createElement('li');
     currentPostItem.classList.add('list-group-item');
 
     const currentPostHref = document.createElement('a');
-    currentPostHref.setAttribute('href', currentPost.link);
-    currentPostHref.textContent = `${currentPost.title} / ${currentPost.description}`;
+    currentPostHref.setAttribute('href', currentPost.postLink);
+    currentPostHref.textContent = currentPost.postTitle;// / ${currentPost.description}`;
     currentPostItem.appendChild(currentPostHref);
+    // добавить кнопку рядом с текстом
+    const previewButton = document.createElement('button');
+    // previewButton.classList.add('btn btn-primary');
+    // previewButton.setAttribute('');
+    currentPostItem.appendChild(previewButton);
 
     postsList.appendChild(currentPostItem);
   });
@@ -97,7 +97,7 @@ const feedbackDanger = document.querySelector('[class="feedback text-danger"]');
 const successMessage = document.querySelector('[class="feedback text-success"]');
 
 const renderInputError = (errorName) => {
-  console.log(`render error function get value - ${errorName}`);
+  // console.log(`render error function get value - ${errorName}`);
   feedbackDanger.textContent = !(errorName === '') ? i18next.t(`errors.input.${errorName}`) : '';
 };
 
@@ -106,7 +106,7 @@ const renderFeedError = (errorName) => {
 };
 
 const renderSuccessMessage = (messageName) => {
-  console.log('SUCCESS MESSAGE RENDERER');
+  // console.log('SUCCESS MESSAGE RENDERER');
   successMessage.textContent = !(messageName === '') ? i18next.t(`messages.${messageName}`) : '';
 };
 
