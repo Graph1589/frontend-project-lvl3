@@ -1,6 +1,6 @@
 
 // вынести view слой
-// открытие постов в новой вкладке
+// разблок кнопку при ошибке сети
 // ***
 
 import onChange from 'on-change';
@@ -105,7 +105,8 @@ export default () => {
   });
 
   const addNewPosts = (newPosts, id) => {
-    const processedNewPosts = newPosts.map((post) => ({ ...post, id }));
+    const viewed = false;
+    const processedNewPosts = newPosts.map((post) => ({ ...post, id, viewed }));
     watchedState.layout.posts = processedNewPosts.concat(state.layout.posts);
   };
 
@@ -113,8 +114,9 @@ export default () => {
     streamTitle, streamDescription, posts, feedLink,
   }) => {
     const id = _.uniqueId();
+    const viewed = false;
     watchedState.layout.feeds = [{
-      streamTitle, streamDescription, feedLink, id,
+      streamTitle, streamDescription, feedLink, id, viewed,
     }, ...state.layout.feeds];
     const processedPosts = posts.map((post) => ({ ...post, id }));
     console.log(processedPosts);

@@ -76,12 +76,22 @@ const renderLayout = (state) => {
   // добавление постов
 
   state.layout.posts.forEach((currentPost) => {
+    const postForRender = currentPost;
     const currentPostItem = document.createElement('li');
     currentPostItem.classList.add('list-group-item');
 
     const currentPostHref = document.createElement('a');
-    currentPostHref.setAttribute('href', currentPost.postLink);
-    currentPostHref.textContent = currentPost.postTitle;// / ${currentPost.description}`;
+    currentPostHref.setAttribute('href', postForRender.postLink);
+    currentPostHref.setAttribute('target', '_blank');
+    currentPostHref.textContent = postForRender.postTitle;// / ${currentPost.description}`;
+    const hrefTextClass = postForRender.viewed ? 'font-weight-normal' : 'font-weight-bold';
+    console.log(`href class - ${hrefTextClass}`);
+    currentPostHref.classList.add(hrefTextClass);
+    currentPostHref.addEventListener('click', (e) => {
+      postForRender.viewed = true;
+      e.target.classList.remove('font-weight-bold');
+      e.target.classList.add('font-weight-normal');
+    });
     currentPostItem.appendChild(currentPostHref);
     // добавить кнопку рядом с текстом
     const previewButton = document.createElement('button');
