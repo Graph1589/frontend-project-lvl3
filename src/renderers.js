@@ -2,6 +2,9 @@ import i18next from 'i18next';
 
 const renderLayout = (state) => {
   const layout = document.querySelector('[id="layout"]');
+  const modalTitle = document.querySelector('[class="modal-title"]');
+  const modalContent = document.querySelector('[class="modal-body"]');
+  const modalRedirectButton = document.querySelector('[id="redirectButton"]');
   // здесь будет отчистка лэйаута
 
   const layoutCleaner = (node) => {
@@ -76,6 +79,7 @@ const renderLayout = (state) => {
   // добавление постов
 
   state.layout.posts.forEach((currentPost) => {
+    // переопределить пост в функции, убрать из листнеров
     const currentPostItem = document.createElement('li');
     currentPostItem.classList.add('list-group-item');
 
@@ -96,8 +100,18 @@ const renderLayout = (state) => {
     const previewButton = document.createElement('button');
     previewButton.textContent = 'Preview';
     previewButton.classList.add('btn-primary', 'btn', 'btn-sm');
+    previewButton.setAttribute('data-toggle', 'modal');
+    previewButton.setAttribute('data-target', '#exampleModal');
     // previewButton.classList.add('btn btn-primary');
     // previewButton.setAttribute('');
+    previewButton.addEventListener('click', () => {
+      modalTitle.textContent = currentPost.postTitle;
+      modalContent.textContent = currentPost.postDescription;
+      const post = currentPost;
+      post.viewed = true;
+      currentPostHref.classList.replace('font-weight-bold', 'font-weight-normal');
+      modalRedirectButton.href = currentPost.postLink;
+    });
     currentPostItem.appendChild(previewButton);
 
     postsList.appendChild(currentPostItem);
