@@ -1,4 +1,3 @@
-
 // вынести view слой
 // открытие постов в новой вкладке
 // ***
@@ -14,7 +13,6 @@ import {
 import validate from './validator';
 import parseXML from './parser';
 // import view form './view';
-
 
 export default () => {
   const state = {
@@ -89,7 +87,7 @@ export default () => {
     }
   });
 
-  const getFeedsList = () => watchedState.layout.feeds.map((feed) => feed.url);
+  const getFeedsList = () => state.layout.feeds.map((feed) => feed.feedLink);
 
   const updateValidationState = () => {
     const error = validate(watchedState.form.injectedUrl, getFeedsList());
@@ -114,7 +112,7 @@ export default () => {
   }) => {
     const id = _.uniqueId();
     watchedState.layout.feeds = [{
-      streamTitle, streamDescription, feedLink, id,
+      streamTitle, streamDescription, feedLink, id, viewed: 'false',
     }, ...state.layout.feeds];
     const processedPosts = posts.map((post) => ({ ...post, id }));
     console.log(processedPosts);

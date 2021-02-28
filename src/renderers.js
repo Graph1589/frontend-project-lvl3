@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 
 const renderLayout = (state) => {
-  const layout = document.querySelector('[class="container-xl"]');
+  const layout = document.querySelector('[id="layout"]');
   // здесь будет отчистка лэйаута
 
   const layoutCleaner = (node) => {
@@ -81,10 +81,21 @@ const renderLayout = (state) => {
 
     const currentPostHref = document.createElement('a');
     currentPostHref.setAttribute('href', currentPost.postLink);
+    currentPostHref.setAttribute('target', '_blank');
     currentPostHref.textContent = currentPost.postTitle;// / ${currentPost.description}`;
+    if (!currentPost.viewed) {
+      currentPostHref.classList.add('font-weight-bold');
+    }
     currentPostItem.appendChild(currentPostHref);
+    currentPostHref.addEventListener('click', () => {
+      const post = currentPost;
+      post.viewed = true;
+      currentPostHref.classList.replace('font-weight-bold', 'font-weight-normal');
+    });
     // добавить кнопку рядом с текстом
     const previewButton = document.createElement('button');
+    previewButton.textContent = 'Preview';
+    previewButton.classList.add('btn-primary', 'btn', 'btn-sm');
     // previewButton.classList.add('btn btn-primary');
     // previewButton.setAttribute('');
     currentPostItem.appendChild(previewButton);
