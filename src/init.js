@@ -28,7 +28,7 @@ export default () => {
     lng: 'en',
     debug: false,
     resources,
-  }).then((t) => {
+  }).then(() => {
     // renderLayout(state, t);
   });
 
