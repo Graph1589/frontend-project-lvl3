@@ -24,6 +24,14 @@ export default () => {
     },
   };
 
+  i18next.init({
+    lng: 'en',
+    debug: false,
+    resources,
+  }).then((t) => {
+    renderLayout(state, t);
+  });
+
   const proxy = 'https://hexlet-allorigins.herokuapp.com/raw?disableCache=true&url=';
 
   const form = document.querySelector('[class="rss-form form-inline mt-3"]');
@@ -124,13 +132,5 @@ export default () => {
     e.preventDefault();
     watchedState.form.processState = 'sending';
     getRSS(urlField.value);
-  });
-
-  i18next.init({
-    lng: 'en',
-    debug: false,
-    resources,
-  }).then((t) => {
-    renderLayout(state, t);
   });
 };
