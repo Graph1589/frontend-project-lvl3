@@ -29,7 +29,7 @@ export default () => {
     debug: false,
     resources,
   }).then((t) => {
-    renderLayout(state, t);
+    // renderLayout(state, t);
   });
 
   const proxy = 'https://hexlet-allorigins.herokuapp.com/raw?disableCache=true&url=';
