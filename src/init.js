@@ -74,6 +74,7 @@ export default () => {
   };
 
   urlField.addEventListener('input', (e) => {
+    e.preventDefault();
     console.log(urlField);
     console.log('input');
     feedbackSuccess.textContent = '';
