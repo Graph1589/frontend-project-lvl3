@@ -27,7 +27,6 @@ export default () => {
   const proxy = 'https://hexlet-allorigins.herokuapp.com/raw?disableCache=true&url=';
 
   const form = document.querySelector('[class="rss-form form-inline mt-3"]');
-  const urlField = document.querySelector('[class="form-control"]');
   const submitButton = document.querySelector('[type="submit"]');
 
   const feedbackSuccess = document.querySelector('[class="feedback text-success"]');
@@ -64,6 +63,8 @@ export default () => {
     watchedState.form.valid = (error === '');
     watchedState.form.inputError = error;
   };
+
+  const urlField = document.querySelector('[class="form-control"]');
 
   urlField.addEventListener('input', (e) => {
     feedbackSuccess.textContent = '';
