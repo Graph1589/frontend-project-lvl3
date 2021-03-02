@@ -1,5 +1,3 @@
 import init from './init';
 
-init();
-
-export default init;
+export default () => init();
