@@ -1,4 +1,3 @@
-// @ts-check
-import init from './init3';
+import init from './init';
 
 init();

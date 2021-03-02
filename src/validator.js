@@ -3,10 +3,6 @@ import * as yup from 'yup';
 const schema = yup.string().url();
 
 const validate = (url, feedsList) => {
-  console.log('//');
-  console.log(url);
-  console.log(feedsList);
-  console.log('//');
   if (feedsList.includes(url)) {
     return 'notOneOf';
   }

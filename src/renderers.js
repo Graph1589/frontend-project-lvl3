@@ -5,7 +5,6 @@ const renderLayout = (state) => {
   const modalTitle = document.querySelector('[class="modal-title"]');
   const modalContent = document.querySelector('[class="modal-body"]');
   const modalRedirectButton = document.querySelector('[id="redirectButton"]');
-  // здесь будет отчистка лэйаута
 
   const layoutCleaner = (node) => {
     if (node.hasChildNodes()) {
@@ -24,10 +23,6 @@ const renderLayout = (state) => {
     layoutCleaner(childNode);
   });
 
-  // *******
-  // а здесь вывод стейта
-
-  // ФИДЫ------------------------------------------------
   const feedsContainerCoat = document.createElement('div');
   feedsContainerCoat.classList.add('row');
   layout.appendChild(feedsContainerCoat);
@@ -43,7 +38,7 @@ const renderLayout = (state) => {
   const feedsList = document.createElement('ul');
   feedsList.classList.add('list-group', 'mb-5');
   feedsContainerInward.appendChild(feedsList);
-  // добавление фидов
+
   state.layout.feeds.forEach((currentFeed) => {
     const currentFeedItem = document.createElement('li');
     currentFeedItem.classList.add('list-group-item');
@@ -58,9 +53,7 @@ const renderLayout = (state) => {
 
     feedsList.appendChild(currentFeedItem);
   });
-  // ***
 
-  // ПОСТЫ------------------------------------------------
   const postsContainerCoat = document.createElement('div');
   postsContainerCoat.classList.add('row');
   layout.appendChild(postsContainerCoat);
@@ -76,17 +69,15 @@ const renderLayout = (state) => {
   const postsList = document.createElement('ul');
   postsList.classList.add('list-group');
   postsContainerInward.appendChild(postsList);
-  // добавление постов
 
   state.layout.posts.forEach((currentPost) => {
-    // переопределить пост в функции, убрать из листнеров
     const currentPostItem = document.createElement('li');
     currentPostItem.classList.add('list-group-item');
 
     const currentPostHref = document.createElement('a');
     currentPostHref.setAttribute('href', currentPost.postLink);
     currentPostHref.setAttribute('target', '_blank');
-    currentPostHref.textContent = currentPost.postTitle;// / ${currentPost.description}`;
+    currentPostHref.textContent = currentPost.postTitle;
     if (!currentPost.viewed) {
       currentPostHref.classList.add('font-weight-bold');
     }
@@ -96,14 +87,11 @@ const renderLayout = (state) => {
       post.viewed = true;
       currentPostHref.classList.replace('font-weight-bold', 'font-weight-normal');
     });
-    // добавить кнопку рядом с текстом
     const previewButton = document.createElement('button');
     previewButton.textContent = 'Preview';
     previewButton.classList.add('btn-primary', 'btn', 'btn-sm');
     previewButton.setAttribute('data-toggle', 'modal');
     previewButton.setAttribute('data-target', '#exampleModal');
-    // previewButton.classList.add('btn btn-primary');
-    // previewButton.setAttribute('');
     previewButton.addEventListener('click', () => {
       modalTitle.textContent = currentPost.postTitle;
       modalContent.textContent = currentPost.postDescription;
@@ -122,7 +110,6 @@ const feedbackDanger = document.querySelector('[class="feedback text-danger"]');
 const successMessage = document.querySelector('[class="feedback text-success"]');
 
 const renderInputError = (errorName) => {
-  // console.log(`render error function get value - ${errorName}`);
   feedbackDanger.textContent = !(errorName === '') ? i18next.t(`errors.input.${errorName}`) : '';
 };
 
@@ -131,7 +118,6 @@ const renderFeedError = (errorName) => {
 };
 
 const renderSuccessMessage = (messageName) => {
-  // console.log('SUCCESS MESSAGE RENDERER');
   successMessage.textContent = !(messageName === '') ? i18next.t(`messages.${messageName}`) : '';
 };
 
