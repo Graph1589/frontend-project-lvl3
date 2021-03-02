@@ -28,6 +28,7 @@ export default () => {
 
   const form = document.querySelector('[class="rss-form form-inline mt-3"]');
   const submitButton = document.querySelector('[type="submit"]');
+  const urlField = document.querySelector('[name="url"]');
 
   const feedbackSuccess = document.querySelector('[class="feedback text-success"]');
 
@@ -64,9 +65,9 @@ export default () => {
     watchedState.form.inputError = error;
   };
 
-  const urlField = document.querySelector('[class="form-control"]');
-
   urlField.addEventListener('input', (e) => {
+    console.log(urlField);
+    console.log('input');
     feedbackSuccess.textContent = '';
     watchedState.form.processState = 'filling';
     watchedState.form.injectedUrl = e.target.value;
