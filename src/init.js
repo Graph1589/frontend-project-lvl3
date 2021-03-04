@@ -75,8 +75,6 @@ export default () => {
 
   urlField.addEventListener('input', (e) => {
     e.preventDefault();
-    console.log(urlField);
-    console.log('input');
     feedbackSuccess.textContent = '';
     watchedState.form.processState = 'filling';
     watchedState.form.injectedUrl = e.target.value;
