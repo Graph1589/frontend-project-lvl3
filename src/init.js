@@ -34,9 +34,9 @@ export default () => {
 
   const proxy = 'https://hexlet-allorigins.herokuapp.com/raw?disableCache=true&url=';
 
-  const form = document.querySelector('[class="rss-form form-inline mt-3"]');
-  const submitButton = document.querySelector('[type="submit"]');
-  const urlField = document.querySelector('[name="url"]');
+  const form = document.querySelector('[class="rss-form"]');
+  const submitButton = document.querySelector('[id="submit-button"]');
+  const urlField = document.querySelector('[id="url-field"]');
 
   const feedbackSuccess = document.querySelector('[class="feedback text-success"]');
 
