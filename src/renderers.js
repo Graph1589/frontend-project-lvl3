@@ -28,7 +28,7 @@ const renderLayout = (state) => {
   layout.appendChild(feedsContainerCoat);
 
   const feedsContainerInward = document.createElement('div');
-  feedsContainerInward.classList.add('col-md-10', 'col-lg-8', 'mx-auto', 'feeds');
+  feedsContainerInward.classList.add('container-fluid', 'col-lg-10', 'mx-auto', 'feeds');
   feedsContainerCoat.appendChild(feedsContainerInward);
 
   const feedsHeader = document.createElement('h2');
@@ -59,7 +59,7 @@ const renderLayout = (state) => {
   layout.appendChild(postsContainerCoat);
 
   const postsContainerInward = document.createElement('div');
-  postsContainerInward.classList.add('col-md-10', 'col-lg-8', 'mx-auto', 'posts');
+  postsContainerInward.classList.add('container-fluid', 'col-lg-10', 'mx-auto', 'posts');
   postsContainerCoat.appendChild(postsContainerInward);
 
   const postsHeader = document.createElement('h2');
@@ -89,9 +89,10 @@ const renderLayout = (state) => {
     });
     const previewButton = document.createElement('button');
     previewButton.textContent = 'Preview';
-    previewButton.classList.add('btn-primary', 'btn', 'btn-sm');
+    previewButton.classList.add('btn-primary', 'btn', 'btn-sm', 'float-right');
     previewButton.setAttribute('data-toggle', 'modal');
     previewButton.setAttribute('data-target', '#exampleModal');
+
     previewButton.addEventListener('click', () => {
       modalTitle.textContent = currentPost.postTitle;
       modalContent.textContent = currentPost.postDescription;

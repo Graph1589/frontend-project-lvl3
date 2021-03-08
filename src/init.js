@@ -47,14 +47,27 @@ export default () => {
         break;
       case 'filling':
         submitButton.disabled = false;
+        urlField.disabled = false;
         renderSuccessMessage('');
+        renderFeedError('');
+        break;
+      case 'networkError':
+        console.log('NETWORK ERROR MESSAGE FROM HANDLER');
+        renderFeedError('network');
+        submitButton.disabled = false;
+        urlField.disabled = false;
         break;
       case 'sending':
+        renderFeedError('');
+        form.disabled = true;
         submitButton.disabled = true;
+        urlField.disabled = true;
         break;
       case 'finished':
         urlField.value = '';
+        urlField.disabled = false;
         renderSuccessMessage('added');
+        renderFeedError('');
         break;
       default:
         throw new Error(`Unknown state: ${processState}`);
@@ -71,6 +84,7 @@ export default () => {
     const error = validate(watchedState.form.injectedUrl, getFeedsList());
     watchedState.form.valid = (error === '');
     watchedState.form.inputError = error;
+    return error;
   };
 
   urlField.addEventListener('input', (e) => {
@@ -106,6 +120,7 @@ export default () => {
       })
       .catch(() => {
         watchedState.form.feedError = 'network';
+        watchedState.form.feedError = '';
       });
   };
 
@@ -129,7 +144,13 @@ export default () => {
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    watchedState.form.processState = 'sending';
-    getRSS(urlField.value);
+    if (updateValidationState() === '') {
+      watchedState.form.processState = 'sending';
+      getRSS(urlField.value);
+    }
   });
+
+  setInterval(() => {
+    console.log(state.form.processState);
+  }, 1000);
 };

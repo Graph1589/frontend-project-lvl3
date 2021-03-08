@@ -14,7 +14,7 @@ export default (
       renderInputError(value);
       break;
     case 'form.feedError':
-      renderFeedError(value);
+      processStateHandler('networkError');
       break;
     case 'layout.posts':
       renderLayout(state);
